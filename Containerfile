@@ -12,7 +12,6 @@ RUN apt update -y && \
       dosfstools \
       e2fsprogs \
       fdisk \
-      linux-image-generic \
       skopeo \
       proxmox-default-kernel \
       proxmox-ve \
