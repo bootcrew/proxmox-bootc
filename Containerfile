@@ -3,7 +3,7 @@ COPY scripts/ /
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt install -y wget
+RUN apt update -y && apt install -y wget
 RUN bash /proxmox.sh
 
 RUN apt update -y && \
