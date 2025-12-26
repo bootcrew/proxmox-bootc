@@ -1,6 +1,10 @@
 FROM docker.io/library/debian:unstable
+COPY scripts/ /
 
 ARG DEBIAN_FRONTEND=noninteractive
+
+apt install -y wget
+RUN bash /proxmox.sh
 
 RUN apt update -y && \
   apt install -y \
@@ -8,11 +12,13 @@ RUN apt update -y && \
       dosfstools \
       e2fsprogs \
       fdisk \
-      firmware-linux-free \
       linux-image-generic \
       skopeo \
+      proxmox-default-kernel \
+      proxmox-ve \
       systemd \
-      systemd-boot* \
+      systemd-boot \
+      systemd-boot-efi \
       xfsprogs && \
   rm -rf /var/lib/apt/lists/* && \
   apt clean -y
