@@ -1,0 +1,66 @@
+#!/bin/bash
+
+set -ouex pipefail
+
+cat > /etc/apt/sources.list.d/pve-install-repo.sources << EOL
+Types: deb
+URIs: http://download.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+EOL
+
+wget https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg -O /usr/share/keyrings/proxmox-archive-keyring.gpg
+
+apt update -y
+
+# Required packages
+apt install -y \
+  btrfs-progs \
+  ca-certificates \
+  curl \
+  dracut \
+  dosfstools \
+  e2fsprogs \
+  fdisk \
+  proxmox-default-kernel \
+  iproute2 \
+  iputils-ping \
+  proxmox-ve \
+  network-manager \
+  rsync \
+  skopeo \
+  sudo \
+  tpm2-tools \
+  xfsprogs \
+  zstd \
+  cryptsetup \
+  libfido2-1 \
+  libfido2-dev \
+  libtss2-esys-3.0.2-0 \
+  libp11-kit0
+
+# TODO: install the latest release by querying releases or using repo when appropriate
+curl --fail --retry 5 --retry-all-errors -sSL -o /tmp/nbc.deb \
+    https://github.com/frostyard/nbc/releases/download/dev/nbc_1.0.0.dev_amd64.deb
+apt install -y /tmp/nbc.deb
+
+# Use proper home directory for new users
+sed -i 's|.*HOME=/home|HOME=/var/home|' "/etc/default/useradd"
+
+# Enable mounts
+systemctl enable home.mount
+systemctl enable root.mount
+systemctl enable srv.mount
+systemctl enable mnt.mount
+systemctl enable media.mount
+systemctl enable opt.mount
+
+# Fix permissions on sudoers.d
+chmod 440 /etc/sudoers.d/001-bootc
+
+# Add build information to os-release
+echo "BUILD_ID=\"$BUILD_ID\"" >> /usr/lib/os-release
+
+# remove bls-garbage-collect from /etc/systemd/system/basic.garget.wants
+rm -rf /etc/systemd/system/basic.target.wants/bls-garbage-collect.service

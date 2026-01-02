@@ -1,5 +1,3 @@
-*.img
+.env
 cosign.key
-_build_*
-output
-_build-*/**
+debian-bootc-core.img
