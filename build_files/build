@@ -12,7 +12,7 @@ EOL
 
 wget https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg -O /usr/share/keyrings/proxmox-archive-keyring.gpg
 
-apt update -y
+apt update -y && apt install wget
 
 # Required packages
 apt install -y \
